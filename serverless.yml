@@ -12,20 +12,20 @@ provider:
 custom:
   region: ${opt:region, self:provider.region}
   stage: ${opt:stage, self:provider.stage}
-  accountId: xxxxxxxx
+  accountId: xxxxxxxxxxxx
 
 functions:
   add:
     handler: functions/add.handler
-    timeout: 1
+    timeout: 3
 
   subtract:
     handler: functions/subtract.handler
-    timeout: 1
+    timeout: 3
 
   double:
     handler: functions/double.handler
-    timeout: 1
+    timeout: 3
 
 stepFunctions:
   stateMachines:
@@ -59,6 +59,7 @@ stepFunctions:
             Type: Task
             Resource: arn:aws:lambda:${self:custom.region}:${self:custom.accountId}:function:${self:service}-${self:custom.stage}-double
             InputPath: $.n
+            TimeoutSeconds: 1
             Retry: 
               - ErrorEquals:
                   - States.Timeout
