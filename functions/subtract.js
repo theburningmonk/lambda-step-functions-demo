@@ -1,5 +1,3 @@
-'use strict';
-
-module.exports.handler = (event, context, callback) => {
-  callback(null, event.x - event.y);
+module.exports.handler = async (event, context) => {
+  return event.x - event.y;
 };

@@ -1,5 +1,3 @@
-'use strict';
-
 function NotANumberError(varName) {
   this.name = 'NotANumberError';
   this.message = `${varName} is not a number!`;
@@ -12,16 +10,16 @@ function NumberIsTooBig(varName, max) {
 }
 NumberIsTooBig.prototype = new Error();
 
-module.exports.handler = (n, context, callback) => {
+module.exports.handler = async (n, context) => {
   if (!n) {
-    callback(new NotANumberError("n"));
+    throw new NotANumberError("n");
   } else if (n > 42) {
-    callback(new NumberIsTooBig("n", 42));
+    throw new NumberIsTooBig("n", 42);
   } else if (n === 42) {
     while(true) {
       // do nothing and let it timeout
     }
   } else {
-    callback(null, n * 2);
+    return n * 2;
   }
 };
