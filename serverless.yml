@@ -10,9 +10,6 @@ provider:
   region: us-east-1
   stage: dev
 
-custom:
-  stage: ${opt:stage, self:provider.stage}
-
 functions:
   add:
     handler: functions/add.handler
@@ -28,8 +25,9 @@ functions:
 
 stepFunctions:
   stateMachines:
-    LambdaStepFuncDemo:      
+    LambdaStepFuncDemo:    
       name: LambdaStepFunctionDemo
+      
       definition:
         Comment: "Simple demo of AWS Lambda and AWS Step Functions working together"
         StartAt: choose
@@ -46,17 +44,20 @@ stepFunctions:
                 Next: subtract
           add:
             Type: Task
-            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${self:custom.stage}-add
+            Resource: 
+              Fn::GetAtt: [AddLambdaFunction, Arn]
             Next: double
             ResultPath: $.n
           subtract:
             Type: Task
-            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${self:custom.stage}-subtract
+            Resource: 
+              Fn::GetAtt: [SubtractLambdaFunction, Arn]
             Next: double
             ResultPath: $.n
           double:
             Type: Task
-            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${self:custom.stage}-double
+            Resource: 
+              Fn::GetAtt: [DoubleLambdaFunction, Arn]              
             InputPath: $.n
             TimeoutSeconds: 1
             Retry: 
@@ -73,3 +74,20 @@ stepFunctions:
             End: true
           numberIsTooBig:
             Type: Fail
+      # events:
+      #   - http:
+      #       path: /
+      #       method: POST
+      # alarms:
+      #   topics:
+      #     ok: arn:aws:sns:us-east-1:1234567890:NotifyMe
+      #     alarm: arn:aws:sns:us-east-1:1234567890:NotifyMe
+      #     insufficientData: arn:aws:sns:us-east-1:1234567890:NotifyMe
+      #   metrics:
+      #     - executionsTimeOut
+      #     - executionsFailed
+      #     - executionsAborted
+      #     - executionThrottled
+      # notifications:
+      #   FAILED:
+      #     - sqs: SQS_TOPIC_ARN
