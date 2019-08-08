@@ -2,7 +2,6 @@ service: lambda-step-func-demo
 
 plugins:
   - serverless-step-functions
-  - serverless-pseudo-parameters
 
 provider:
   name: aws
@@ -26,8 +25,7 @@ functions:
 stepFunctions:
   stateMachines:
     LambdaStepFuncDemo:    
-      name: LambdaStepFunctionDemo
-      
+      name: LambdaStepFunctionDemo      
       definition:
         Comment: "Simple demo of AWS Lambda and AWS Step Functions working together"
         StartAt: choose
@@ -45,19 +43,19 @@ stepFunctions:
           add:
             Type: Task
             Resource: 
-              Fn::GetAtt: [AddLambdaFunction, Arn]
+              Fn::GetAtt: [add, Arn]
             Next: double
             ResultPath: $.n
           subtract:
             Type: Task
             Resource: 
-              Fn::GetAtt: [SubtractLambdaFunction, Arn]
+              Fn::GetAtt: [subtract, Arn]
             Next: double
             ResultPath: $.n
           double:
             Type: Task
             Resource: 
-              Fn::GetAtt: [DoubleLambdaFunction, Arn]              
+              Fn::GetAtt: [double, Arn]              
             InputPath: $.n
             TimeoutSeconds: 1
             Retry: 
